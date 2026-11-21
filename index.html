@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memoria Ancestral · Guardianes del Tahuantinsuyo</title>
+<meta name="description" content="Juego web para reforzar la memoria con el patrimonio cultural del Perú. Autor: Elio José Gabancho Catunta (UTP).">
+<link rel="icon" type="image/png" href="assets/pixelart/png/inti.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <canvas id="fondo"></canvas>
+
+  <!-- Barra superior -->
+  <div id="barra">
+    <button id="btn-sonido" class="mini" title="Silenciar (M)">🔊</button>
+    <button id="btn-qa" class="mini" title="Panel QA (F2)">QA</button>
+  </div>
+
+  <!-- ========== PORTADA ========== -->
+  <section id="sc-portada" class="escena">
+    <div class="portada">
+      <div class="iconos-titulo"><span data-icono="inti"></span><span data-icono="chakana"></span><span data-icono="condor"></span></div>
+      <h1>MEMORIA<br>ANCESTRAL</h1>
+      <h2>Guardianes del Tahuantinsuyo</h2>
+      <p class="lema">Entrena tu memoria con el patrimonio del Perú</p>
+      <div class="integrantes">
+        <p>INTEGRANTE</p>
+        <p class="autor">Elio José Gabancho Catunta</p>
+        <p class="curso">Videojuegos II · Universidad Tecnológica del Perú</p>
+      </div>
+      <p class="parpadeo">PRESIONA ENTER O HAZ CLIC PARA COMENZAR</p>
+      <p class="version" id="version"></p>
+    </div>
+  </section>
+
+  <!-- ========== MENÚ ========== -->
+  <section id="sc-menu" class="escena">
+    <div class="panel menu">
+      <h2 class="titulo-sec">ELIGE TU PRUEBA, GUARDIÁN</h2>
+      <label class="campo">Tu nombre: <input id="nombre" maxlength="18" placeholder="Guardián"></label>
+      <div class="modos">
+        <div class="modo">
+          <span class="ico" data-icono="huaco"></span>
+          <h3>1 · Pares del Tahuantinsuyo</h3>
+          <p>Memoria visual: encuentra los pares de objetos y aprende su historia.</p>
+          <div class="fila-btn">
+            <button class="btn principal" data-pares="0">Nivel 1</button>
+            <button class="btn" data-pares="1">Nivel 2</button>
+            <button class="btn" data-pares="2">Nivel 3</button>
+          </div>
+          <button class="btn dos" data-pares="1" data-dos="1">👥 2 jugadores</button>
+        </div>
+        <div class="modo">
+          <span class="ico" data-icono="zampona"></span>
+          <h3>2 · El Quipu Sagrado</h3>
+          <p>Memoria de trabajo: repite la secuencia de nudos y sonidos.</p>
+          <label class="check"><input type="checkbox" id="quipu-chunk" checked> Agrupar de 3 en 3</label>
+          <label class="check"><input type="checkbox" id="quipu-inverso"> Orden inverso (difícil)</label>
+          <button class="btn principal" id="btn-quipu">Jugar</button>
+        </div>
+        <div class="modo">
+          <span class="ico" data-icono="maiz"></span>
+          <h3>3 · El Mercado de Cusco</h3>
+          <p>Memoria a corto plazo: recuerda el pedido después de una distracción.</p>
+          <button class="btn principal" id="btn-mercado">Jugar</button>
+        </div>
+      </div>
+      <div class="fila-btn inferior">
+        <button class="btn" data-ir="progreso">📈 Mi progreso</button>
+        <button class="btn" data-ir="ayuda">📜 Cómo jugar y ciencia</button>
+        <button class="btn" data-ir="creditos">✦ Créditos</button>
+        <button class="btn" data-ir="portada">⌂ Portada</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== MODO 1: PARES ========== -->
+  <section id="sc-pares" class="escena juego">
+    <div class="cab"><button class="btn btn-salir">◀ Menú</button><h3 id="pares-nivel"></h3></div>
+    <div class="hud" id="pares-hud"></div>
+    <div id="pares-tablero"></div>
+  </section>
+
+  <!-- ========== MODO 2: QUIPU ========== -->
+  <section id="sc-quipu" class="escena juego">
+    <div class="cab"><button class="btn btn-salir">◀ Menú</button><h3>EL QUIPU SAGRADO · <span id="quipu-modo"></span></h3></div>
+    <div class="hud" id="quipu-hud"></div>
+    <div class="quipu-area">
+      <div class="cuerda-madre"></div>
+      <div id="quipu-cuerdas"></div>
+      <p id="quipu-estado" class="estado"></p>
+      <div class="medidor-caja"><span>Tu span vs. 7 ± 2 (Miller)</span><div id="quipu-medidor"></div></div>
+      <p class="ayuda-teclas">Haz clic en las cuerdas o usa las teclas 1 · 2 · 3 · 4</p>
+    </div>
+  </section>
+
+  <!-- ========== MODO 3: MERCADO ========== -->
+  <section id="sc-mercado" class="escena juego">
+    <div class="cab"><button class="btn btn-salir">◀ Menú</button><h3>EL MERCADO DE CUSCO</h3></div>
+    <div class="hud" id="mercado-hud"></div>
+    <div class="fase" id="mer-estudio">
+      <p class="vendedora"><span data-icono="chullo"></span><span id="mer-instr"></span></p>
+      <div id="mer-lista" class="productos"></div>
+      <div class="barra-t"><i id="mer-barra-estudio"></i></div>
+      <p class="estado">Memoriza el pedido</p>
+    </div>
+    <div class="fase" id="mer-distractor">
+      <p class="vendedora"><span data-icono="papa"></span>«¡Ayúdame a dar el vuelto mientras tanto!»</p>
+      <p id="mer-cuenta" class="cuenta"></p>
+      <div id="mer-opciones" class="fila-btn"></div>
+      <div class="barra-t"><i id="mer-barra-dist"></i></div>
+      <p class="estado">Tarea distractora: evita repasar la lista</p>
+    </div>
+    <div class="fase" id="mer-reconocer">
+      <p class="vendedora"><span data-icono="llama"></span>«¿Qué productos te pedí? Márcalos.»</p>
+      <div id="mer-opciones-obj" class="productos"></div>
+      <p id="mer-contador" class="estado"></p>
+      <button class="btn principal" id="mer-confirmar">Confirmar</button>
+    </div>
+  </section>
+
+  <!-- ========== PROGRESO ========== -->
+  <section id="sc-progreso" class="escena">
+    <div class="panel">
+      <h2 class="titulo-sec">📈 MI PROGRESO</h2>
+      <div id="prog-resumen" class="resumen"></div>
+      <p id="prog-repaso" class="repaso"></p>
+      <canvas id="prog-grafico" class="px grafico"></canvas>
+      <p class="leyenda"><i style="background:#f2c14e"></i>Pares <i style="background:#c0392b"></i>Quipu <i style="background:#3f8f3a"></i>Mercado</p>
+      <div class="tabla-caja">
+        <table id="prog-tabla">
+          <thead><tr><th>Fecha</th><th>Jugador</th><th>Modo</th><th>Nivel</th><th>Puntaje</th><th>Precisión</th><th>Span</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="nota">Los datos se guardan solo en este dispositivo.</p>
+      <div class="fila-btn"><button class="btn" data-ir="menu">◀ Menú</button><button class="btn" id="btn-borrar">Borrar historial</button></div>
+    </div>
+  </section>
+
+  <!-- ========== AYUDA / CIENCIA ========== -->
+  <section id="sc-ayuda" class="escena">
+    <div class="panel texto">
+      <h2 class="titulo-sec">📜 CÓMO JUGAR Y LA CIENCIA DETRÁS</h2>
+      <div class="dos-col">
+        <div>
+          <h3>Controles</h3>
+          <ul>
+            <li><b>Ratón / toque:</b> voltear cartas, pulsar nudos y elegir productos.</li>
+            <li><b>1 2 3 4:</b> nudos del quipu.</li>
+            <li><b>Enter:</b> comenzar / confirmar.</li>
+            <li><b>Esc:</b> volver al menú.</li>
+            <li><b>M:</b> silenciar · <b>F2:</b> panel de calidad.</li>
+          </ul>
+          <h3>Modos</h3>
+          <ul>
+            <li><b>Pares:</b> memoriza durante la vista previa y luego encuentra los pares antes de que se acabe el tiempo. Los combos dan más puntos. En 2 jugadores, quien acierta sigue jugando.</li>
+            <li><b>Quipu:</b> mira la secuencia de nudos y repítela. Cada ronda se agrega un nudo. Tienes 2 vidas.</li>
+            <li><b>Mercado:</b> memoriza el pedido, resuelve cuentas y luego marca los productos correctos.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Teorías de la psicología aplicadas</h3>
+          <ul>
+            <li><b>Baddeley y Hitch (1974):</b> la memoria de trabajo tiene un bucle fonológico y una agenda visoespacial. El quipu usa ambos: color y sonido.</li>
+            <li><b>Miller (1956):</b> recordamos unos 7 ± 2 elementos; agruparlos (chunking) amplía esa capacidad.</li>
+            <li><b>Paivio (1971):</b> codificación dual: imagen + palabra se recuerda mejor que solo una.</li>
+            <li><b>Atkinson y Shiffrin (1968):</b> memoria sensorial → corto plazo → largo plazo; el repaso transfiere la información.</li>
+            <li><b>Brown-Peterson (1958-1959):</b> sin repaso, la memoria de corto plazo se pierde en segundos.</li>
+            <li><b>Ebbinghaus (1885):</b> curva del olvido; repasar en días espaciados mejora la retención.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="fila-btn"><button class="btn" data-ir="menu">◀ Menú</button></div>
+    </div>
+  </section>
+
+  <!-- ========== CRÉDITOS ========== -->
+  <section id="sc-creditos" class="escena">
+    <div class="panel texto centrado">
+      <h2 class="titulo-sec">✦ CRÉDITOS</h2>
+      <p>Diseño, programación, pixel art y sonido</p>
+      <p class="autor">Elio José Gabancho Catunta</p>
+      <p>Curso: Videojuegos II · Universidad Tecnológica del Perú (UTP)</p>
+      <p>Tecnología: HTML5, CSS3 y JavaScript puro · Canvas 2D · Web Audio API</p>
+      <p>Calidad total: principios de W. Edwards Deming (ciclo PDCA)</p>
+      <p>Fuente tipográfica: Press Start 2P (CodeMan38, licencia SIL OFL)</p>
+      <p>Música y efectos: sintetizados en tiempo real por el juego</p>
+      <div class="iconos-creditos" id="galeria"></div>
+      <div class="fila-btn"><button class="btn" data-ir="menu">◀ Menú</button></div>
+    </div>
+  </section>
+
+  <!-- Modal, notificaciones y panel QA -->
+  <div id="modal" class="oculto"><div class="caja"><h2 id="modal-titulo"></h2><div id="modal-cuerpo"></div><div id="modal-botones" class="fila-btn"></div></div></div>
+  <div id="toast"></div>
+  <div id="qa" class="oculto"></div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/pixelart.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/qa.js"></script>
+<script src="js/guardado.js"></script>
+<script src="js/fondo.js"></script>
+<script src="js/modes/pares.js"></script>
+<script src="js/modes/quipu.js"></script>
+<script src="js/modes/mercado.js"></script>
+<script src="js/main.js"></script>
+<script>
+  // Galería de sprites en créditos
+  window.addEventListener('DOMContentLoaded', () => {
+    const g = document.getElementById('galeria');
+    OBJETOS.forEach(o => { const d = document.createElement('div'); d.appendChild(PixelArt.img(o.id)); const s = document.createElement('small'); s.textContent = o.nombre; d.appendChild(s); g.appendChild(d); });
+  });
+</script>
+</body>
+</html>
